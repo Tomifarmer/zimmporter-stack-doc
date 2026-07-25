@@ -13,7 +13,6 @@ A full-stack music import system. Search YouTube Music, download albums and play
 ## Architecture Overview
 
 ```mermaid
-%%{init: {'theme': 'neutral', 'themeVariables': {'background': '#ffffff'}}}%%
 graph LR
   classDef primary fill:#3b82f6,stroke:#3b82f6,color:#fff
   classDef accent fill:#40e0d0,stroke:#40e0d0,color:#000

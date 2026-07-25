@@ -3,7 +3,6 @@
 ## Data Flow
 
 ```mermaid
-%%{init: {'theme': 'neutral', 'themeVariables': {'background': '#ffffff'}}}%%
 graph TD
   classDef primary fill:#3b82f6,stroke:#3b82f6,color:#fff
   classDef accent fill:#40e0d0,stroke:#40e0d0,color:#000
