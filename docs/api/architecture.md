@@ -3,7 +3,13 @@
 ## Data Flow
 
 ```mermaid
+%%{init: {'theme': 'neutral', 'themeVariables': {'background': '#ffffff'}}}%%
 graph TD
+  classDef primary fill:#3b82f6,stroke:#3b82f6,color:#fff
+  classDef accent fill:#40e0d0,stroke:#40e0d0,color:#000
+  classDef storage fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+  classDef external fill:#334155,stroke:#64748b,color:#e2e8f0
+
   CR[Client Request] --> R[FastAPI Router]
   R --> CT[Celery Task]
   CT --> WP[Worker Process]
@@ -12,6 +18,10 @@ graph TD
   FF --> MT[mutagen<br/>embed metadata]
   MT --> S3[boto3<br/>upload to S3]
   S3 --> DB[(MariaDB<br/>store result)]
+
+  class CR,R,CT,WP primary
+  class YT,FF,MT external
+  class S3,DB storage
 ```
 
 ## Concurrency Model

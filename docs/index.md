@@ -13,7 +13,12 @@ A full-stack music import system. Search YouTube Music, download albums and play
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'neutral', 'themeVariables': {'background': '#ffffff'}}}%%
 graph LR
+  classDef primary fill:#3b82f6,stroke:#3b82f6,color:#fff
+  classDef accent fill:#40e0d0,stroke:#40e0d0,color:#000
+  classDef storage fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+
   U([User]) --> F[Frontend<br/>Next.js]
   F -->|REST| A[API<br/>FastAPI]
   A --> Q[(Redis)]
@@ -21,6 +26,10 @@ graph LR
   W --> YT[YouTube Music]
   W --> S3[(S3 Storage)]
   W --> DB[(MariaDB)]
+
+  class F,A primary
+  class W accent
+  class Q,S3,DB storage
 ```
 
 The frontend communicates with the API via REST endpoints. The API dispatches long-running tasks (download, convert, upload) to Celery workers. Results and job status are stored in MariaDB.
