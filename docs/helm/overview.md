@@ -20,6 +20,5 @@ The Zimmporter Helm chart deploys the full stack to Kubernetes.
 ## Quick Install
 
 ```bash
-helm repo add zimmporter https://tomifarmer.github.io/zimmporter-helm
-helm install zimmporter zimmporter/zimmporter-stack
+helm install zimmporter oci://ghcr.io/tomifarmer/zimmporter
 ```
