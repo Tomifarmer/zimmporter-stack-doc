@@ -1,0 +1,64 @@
+site_name: Zimmporter Stack
+site_description: A full-stack music import system — search, download, convert, and upload music to S3
+site_url: https://tomifarmer.github.io/zimmporter-stack-doc/
+repo_url: https://github.com/Tomifarmer/zimmporter-stack-doc
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.path
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.annotate
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.snippets
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API:
+      - Overview: api/overview.md
+      - Architecture: api/architecture.md
+      - Endpoints: api/endpoints.md
+      - Configuration: api/configuration.md
+  - Frontend:
+      - Overview: frontend/overview.md
+      - Pages: frontend/pages.md
+      - Configuration: frontend/configuration.md
+  - Helm:
+      - Overview: helm/overview.md
+      - Configuration: helm/configuration.md
+      - Deployment: helm/deployment.md
+  - Contributing: contributing.md
