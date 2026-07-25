@@ -5,7 +5,7 @@ A full-stack music import system. Search YouTube Music, download albums and play
 ## Components
 
 | Component | Role | Stack |
-|---|---|---|---|
+|---|---|---|
 | **API** | Backend service with async task queue | Python, FastAPI, Celery, Valkey/Redis, MariaDB |
 | **Worker** | Celery worker processing downloads | Python, yt-dlp, ffmpeg, boto3, mutagen |
 | **Frontend** | Web UI for searching and managing downloads | TypeScript, Next.js, React, PrimeReact |
