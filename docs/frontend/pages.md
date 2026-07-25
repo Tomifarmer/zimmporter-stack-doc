@@ -1,32 +1,37 @@
 # Pages
 
-## Search Page
+## Home (`/`)
+
+Redirects to `/search`.
+
+## Search (`/search`)
 
 The main interface for searching YouTube Music. Supports search by album, artist, and playlist.
 
-- Search input with autocomplete
+- Search input with type selector (album / artist / playlist) and result limit
 - Results displayed as cards with album art
-- One-click import button on each result
+- Multi-select results with checkboxes
+- Concurrent download slider (1–8 parallel downloads)
+- Batch import button to start downloads for all selected items
 
-## Job Queue
+After starting a download, redirects to the jobs list page.
 
-Displays all import jobs with their current status:
+## Job List (`/jobs`)
+
+Displays all import jobs with pagination (limit/offset):
 
 - **Pending** — waiting for a worker
 - **Running** — actively being processed
-- **Completed** — successfully uploaded to S3
+- **Success** — successfully uploaded to S3
 - **Failed** — error during processing
 
-Each job shows progress, elapsed time, and links to the imported tracks.
+Each job shows type (album/playlist), status badge, progress (album and song counts), error messages, and timestamps. Table auto-refreshes periodically.
 
-## Track Library
+## Job Detail (`/jobs/[id]`)
 
-Browse all imported tracks with search, filter, and sort capabilities.
+Detailed view of a single job with:
 
-- Grid and list views
-- Filter by album, artist, or date
-- Direct S3 download links
-
-## Settings
-
-Configuration page for S3 endpoint, API URL, and other user preferences (optional, depending on deployment).
+- Real-time polling (every 3 seconds) while job is pending/running
+- Progress summary (current album, album progress, song counts)
+- Per-song status table with download status for each track
+- Retry button for failed songs within the job

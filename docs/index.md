@@ -5,9 +5,10 @@ A full-stack music import system. Search YouTube Music, download albums and play
 ## Components
 
 | Component | Role | Stack |
-|---|---|---|
-| **API** | Backend service with async task queue | Python, FastAPI, Celery, MariaDB |
-| **Frontend** | Web UI for searching and managing downloads | TypeScript, Next.js 16, React 19, PrimeReact |
+|---|---|---|---|
+| **API** | Backend service with async task queue | Python, FastAPI, Celery, Valkey/Redis, MariaDB |
+| **Worker** | Celery worker processing downloads | Python, yt-dlp, ffmpeg, boto3, mutagen |
+| **Frontend** | Web UI for searching and managing downloads | TypeScript, Next.js, React, PrimeReact |
 | **Helm** | Kubernetes deployment chart | Helm 3 |
 
 ## Architecture Overview
@@ -20,7 +21,7 @@ graph LR
 
   U([User]) --> F[Frontend<br/>Next.js]
   F -->|REST| A[API<br/>FastAPI]
-  A --> Q[(Redis)]
+  A -->   Q[(Valkey/Redis)]
   Q --> W[Celery Workers]
   W --> YT[YouTube Music]
   W --> S3[(S3 Storage)]

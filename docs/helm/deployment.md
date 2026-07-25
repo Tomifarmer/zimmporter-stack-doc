@@ -3,18 +3,25 @@
 ## Install with Custom Values
 
 ```bash
-helm install zimmporter ./zimmporter-helm \
-  --set s3.endpoint=https://s3.example.com \
+helm install zimmporter oci://ghcr.io/tomifarmer/zimmporter \
+  --set images.api.tag=v1.2.3 \
+  --set s3.endpoint=https://s3.example.com:9000 \
+  --set s3.accessKey=myAccessKey \
+  --set s3.secretKey=mySecretKey \
   --set s3.bucket=music \
-  --set ingress.enabled=true \
-  --set ingress.host=zimmporter.example.com
+  --set ingress.api.enabled=true \
+  --set ingress.api.host=zimmporter-api.example.com \
+  --set ingress.frontend.enabled=true \
+  --set ingress.frontend.host=zimmporter.example.com
 ```
 
 ## Upgrade
 
 ```bash
-helm upgrade zimmporter ./zimmporter-helm \
-  --set api.image.tag=v1.2.3
+helm upgrade zimmporter oci://ghcr.io/tomifarmer/zimmporter \
+  --set images.api.tag=v1.2.3 \
+  --set images.worker.tag=v1.2.3 \
+  --set images.frontend.tag=v1.2.3
 ```
 
 ## Uninstall
@@ -23,30 +30,60 @@ helm upgrade zimmporter ./zimmporter-helm \
 helm uninstall zimmporter
 ```
 
+Persistent volume claims for Valkey and MariaDB must be deleted manually:
+
+```bash
+kubectl delete pvc -l app.kubernetes.io/instance=zimmporter
+```
+
 ## Configuration via Values File
 
 Create a `values.yaml`:
 
 ```yaml
-api:
-  image:
+images:
+  api:
     tag: v1.2.3
-  replicaCount: 2
+  worker:
+    tag: v1.2.3
+  frontend:
+    tag: v1.2.3
+
+api:
+  replicas: 2
 
 ingress:
-  enabled: true
-  host: zimmporter.example.com
+  api:
+    enabled: true
+    host: api.zimmporter.example.com
+  frontend:
+    enabled: true
+    host: app.zimmporter.example.com
 
 s3:
-  endpoint: https://minio.example.com
+  endpoint: https://minio.example.com:9000
+  accessKey: myAccessKey
+  secretKey: mySecretKey
   bucket: music
-  region: us-east-1
+  useSSL: true
 
 mariadb:
-  enabled: false
-  externalUrl: mysql://user:password@mariadb.example.com:3306/zimmporter
+  external:
+    enabled: true
+    host: mariadb.example.com
+    port: 3306
+
+valkey:
+  external:
+    enabled: true
+    address: valkey.example.com
+    port: 6379
+
+database:
+  rootPassword: strongRootPw
+  password: strongUserPw
 ```
 
 ```bash
-helm install zimmporter ./zimmporter-helm -f values.yaml
+helm install zimmporter oci://ghcr.io/tomifarmer/zimmporter -f values.yaml
 ```

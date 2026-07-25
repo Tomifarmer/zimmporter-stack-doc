@@ -6,7 +6,7 @@
 - Node.js 20+
 - Docker and Docker Compose (for local dev)
 - MariaDB (or use the provided Docker setup)
-- Redis / Valkey (for Celery broker)
+- Valkey / Redis (for Celery broker)
 - S3-compatible storage (MinIO for local dev)
 
 ## Quick Start with Docker Compose
@@ -25,7 +25,7 @@ cd zimmporter-api
 docker compose up -d
 ```
 
-This starts the API, Celery worker, MariaDB, Redis, and MinIO.
+This starts the API, Celery worker, MariaDB, Valkey, and connects to an external S3-compatible store.
 
 Install and run the frontend:
 
@@ -43,11 +43,11 @@ The API requires the following environment variables:
 
 | Variable | Description |
 |---|---|
-| `DATABASE_URL` | MariaDB connection string |
-| `CELERY_BROKER_URL` | Redis/Valkey URL |
-| `S3_ENDPOINT` | S3-compatible endpoint |
-| `S3_ACCESS_KEY` | S3 access key |
-| `S3_SECRET_KEY` | S3 secret key |
-| `S3_BUCKET` | Target bucket name |
+| `DB_HOST` / `DB_PORT` / `DB_USER` / `DB_PASS` / `DB_NAME` | MariaDB connection details |
+| `CELERY_BROKER` / `CELERY_BACKEND` | Valkey/Redis URLs |
+| `AWS_ENDPOINT_URL` | S3-compatible endpoint |
+| `AWS_ACCESS_KEY_ID` | S3 access key |
+| `AWS_SECRET_ACCESS_KEY` | S3 secret key |
+| `AWS_BUCKET` | Target bucket name |
 
-See the [API configuration](api/configuration.md) page for details.
+See the [API configuration](api/configuration.md) page for all available variables.

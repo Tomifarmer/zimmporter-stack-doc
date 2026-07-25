@@ -5,10 +5,10 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 ## Stack
 
 - **Framework:** FastAPI with Uvicorn
-- **Task Queue:** Celery (Redis/Valkey broker)
+- **Task Queue:** Celery (Valkey/Redis broker and result backend)
 - **Database:** MariaDB via SQLAlchemy + PyMySQL
 - **Core Libraries:** ytmusicapi, yt-dlp, ffmpeg, boto3 (S3), mutagen (metadata)
-- **Testing:** pytest + pytest-mock + httpx (71+ tests)
+- **Testing:** pytest + pytest-mock + httpx
 
 ## Key Features
 
@@ -18,20 +18,31 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 - Embed metadata (title, artist, album, cover art) with mutagen
 - Upload finished files to S3-compatible storage
 - Track job status via Celery result backend
+- Auth middleware (optional API key via `X-API-Key` header)
 
 ## Project Structure
 
 ```
 zimmporter-api/
-├── zimmporter/          # Main application package
-│   ├── main.py          # FastAPI app entry point
-│   ├── models/          # SQLAlchemy models
-│   ├── routers/         # API route handlers
-│   ├── schemas/         # Pydantic request/response schemas
-│   ├── tasks/           # Celery task definitions
-│   └── utils/           # Shared utilities
-├── tests/               # Test suite
-├── Dockerfile           # API server image
-├── Dockerfile.worker    # Celery worker image
-└── pyproject.toml       # Project configuration
+├── api/                 # FastAPI application
+│   ├── app.py           # App factory, lifespan, /health, auth, CORS
+│   ├── models.py        # Pydantic request/response schemas
+│   └── routes/          # Route handlers (search, download, jobs)
+├── db/                  # Database layer
+│   ├── engine.py        # SQLAlchemy engine and session management
+│   └── models.py        # ORM models (Job, Song)
+├── tasks/               # Celery configuration and task definitions
+│   ├── celery_app.py    # Celery app configuration
+│   └── download.py      # Album/playlist download tasks
+├── zimmporter/          # Core library
+│   ├── core.py          # YouTube search and download orchestration
+│   ├── postprocessors.py# FFmpeg conversion, metadata embedding, S3 upload
+│   ├── cert.py          # Custom CA certificate support
+│   └── _version.py      # Version string
+├── tests/               # pytest test suite
+├── Dockerfile           # API server image (Debian)
+├── Dockerfile.alpine    # API server image (Alpine, used in docker-compose)
+├── Dockerfile.worker    # Celery worker image (Debian)
+├── Dockerfile.worker.alpine # Celery worker image (Alpine)
+└── pyproject.toml       # Project configuration and dependencies
 ```

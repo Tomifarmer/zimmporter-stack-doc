@@ -1,73 +1,79 @@
 # API Endpoints
 
-## Search
-
-### Search YouTube Music
-
-```http
-GET /api/search?query={query}&type={album|artist|playlist}
-```
-
-### Get Album Details
-
-```http
-GET /api/albums/{album_id}
-```
-
-## Import Jobs
-
-### Create Import Job
-
-```http
-POST /api/jobs
-```
-
-Request body:
-
-```json
-{
-  "source": "youtube_music",
-  "url": "https://music.youtube.com/...",
-  "format": "aac"
-}
-```
-
-### Get Job Status
-
-```http
-GET /api/jobs/{job_id}
-```
-
-### List Jobs
-
-```http
-GET /api/jobs?status={status}&limit={n}
-```
-
-### Cancel Job
-
-```http
-POST /api/jobs/{job_id}/cancel
-```
-
-## Tracks
-
-### List Tracks
-
-```http
-GET /api/tracks?album_id={album_id}
-```
-
-### Get Track Details
-
-```http
-GET /api/tracks/{track_id}
-```
-
 ## Health
 
 ```http
 GET /health
 ```
 
-Returns service health status including database and broker connectivity.
+Returns per-component health (Valkey, Celery worker, MariaDB). Always returns HTTP 200; check the `status` field for `"ok"` or `"degraded"`.
+
+## Search
+
+### Search YouTube Music
+
+```http
+GET /search?q={query}&type={album|artist|playlist}&limit={n}
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `q` | string | — | Search query (required) |
+| `type` | string | `album` | Result type filter |
+| `limit` | int | `20` | Max results |
+
+## Downloads
+
+### Download Album
+
+```http
+POST /download/album
+```
+
+Request body:
+
+```json
+{
+  "id": "browse_id_or_url",
+  "concurrent": 4
+}
+```
+
+### Download Playlist
+
+```http
+POST /download/playlist
+```
+
+Request body:
+
+```json
+{
+  "id": "browse_id_or_url",
+  "concurrent": 4
+}
+```
+
+## Jobs
+
+### Get Job Status
+
+```http
+GET /jobs/{job_id}
+```
+
+Returns job metadata, current progress (album, song counts), and per-song status.
+
+### List Jobs
+
+```http
+GET /jobs?limit={n}&offset={n}
+```
+
+### Retry Failed Songs
+
+```http
+POST /jobs/{job_id}/retry
+```
+
+Retries all failed songs within a completed job.
