@@ -30,9 +30,6 @@ theme:
     - content.code.annotate
     - content.code.copy
 
-extra_css:
-  - stylesheets/extra.css
-
 plugins:
   - search
 
