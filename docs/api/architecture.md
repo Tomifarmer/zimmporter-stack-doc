@@ -5,9 +5,9 @@
 ```mermaid
 graph TD
   classDef primary fill:#3b82f6,stroke:#3b82f6,color:#fff
-  classDef accent fill:#40e0d0,stroke:#40e0d0,color:#000
-  classDef storage fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
-  classDef external fill:#334155,stroke:#64748b,color:#e2e8f0
+  classDef accent fill:#40e0d0,stroke:#40e0d0,color:#fff
+  classDef storage fill:#1e293b,stroke:#3b82f6,color:#fff
+  classDef external fill:#334155,stroke:#64748b,color:#fff
 
   CR[Client Request] --> R[FastAPI Router]
   R --> CT[Celery Task]
