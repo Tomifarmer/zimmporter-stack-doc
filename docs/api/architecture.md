@@ -2,18 +2,16 @@
 
 ## Data Flow
 
-```
-Client Request → FastAPI Router → Celery Task → Worker Process
-                                                      ↓
-                                              YouTube Music (search/download)
-                                                      ↓
-                                              ffmpeg (convert to AAC)
-                                                      ↓
-                                              mutagen (embed metadata)
-                                                      ↓
-                                              boto3 (upload to S3)
-                                                      ↓
-                                              MariaDB (store result)
+```mermaid
+graph TD
+  CR[Client Request] --> R[FastAPI Router]
+  R --> CT[Celery Task]
+  CT --> WP[Worker Process]
+  WP --> YT[YouTube Music<br/>search / download]
+  YT --> FF[ffmpeg<br/>convert to AAC]
+  FF --> MT[mutagen<br/>embed metadata]
+  MT --> S3[boto3<br/>upload to S3]
+  S3 --> DB[(MariaDB<br/>store result)]
 ```
 
 ## Concurrency Model
