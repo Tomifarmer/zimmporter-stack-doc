@@ -1,5 +1,4 @@
-.mermaid svg {
-  background-color: #ffffff !important;
-  border-radius: 8px;
-  padding: 16px;
+:root,
+:root>* {
+  --md-mermaid-label-bg-color: #ffffff;
 }
