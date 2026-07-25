@@ -15,8 +15,8 @@ A full-stack music import system. Search YouTube Music, download albums and play
 ```mermaid
 graph LR
   classDef primary fill:#3b82f6,stroke:#3b82f6,color:#fff
-  classDef accent fill:#40e0d0,stroke:#40e0d0,color:#000
-  classDef storage fill:#1e293b,stroke:#3b82f6,color:#e2e8f0
+  classDef accent fill:#2c8f75,stroke:#40e0d0,color:#000
+  classDef storage fill:#6f9ade,stroke:#3b82f6,color:#000
 
   U([User]) --> F[Frontend<br/>Next.js]
   F -->|REST| A[API<br/>FastAPI]
