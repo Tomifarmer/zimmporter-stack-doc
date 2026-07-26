@@ -22,6 +22,7 @@
 | `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
 | `api.env.OIDC_CLIENT_ID` | `""` | OIDC client ID (audience) |
 | `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
+| `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extraenv)) |
 
 ## Worker
 
@@ -30,6 +31,7 @@
 | `worker.replicas` | `1` | Celery worker replicas |
 | `worker.concurrency` | `4` | Parallel downloads per worker |
 | `worker.pool` | `prefork` | Celery pool type |
+| `worker.extraEnv` | `[]` | Additional env vars for the worker pod (see [extraEnv](#extraenv)) |
 
 ## Frontend
 
@@ -43,6 +45,7 @@
 | `frontend.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL |
 | `frontend.env.OIDC_CLIENT_ID` | `""` | OIDC client ID |
 | `frontend.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID |
+| `frontend.extraEnv` | `[]` | Additional env vars for the frontend pod (see [extraEnv](#extraenv)) |
 
 ## Ingress
 
@@ -78,6 +81,37 @@
 | `valkey.external.enabled` | `false` | Use external Valkey/Redis instead of in-cluster |
 | `valkey.image` | `valkey/valkey:latest` | Valkey image |
 | `valkey.persistence.size` | `1Gi` | PVC size |
+
+## Extra Environment Variables
+
+Each component (`api`, `worker`, `frontend`) accepts an `extraEnv` list of
+Kubernetes env var entries. A `global.extraEnv` list is also available and
+is merged into **all** pods before each component-specific list (so component
+vars take precedence over global ones).
+
+| Parameter | Default | Description |
+|---|---|---|
+| `global.extraEnv` | `[]` | Applied to every pod |
+| `api.extraEnv` | `[]` | Applied to the API pod only |
+| `worker.extraEnv` | `[]` | Applied to the worker pod only |
+| `frontend.extraEnv` | `[]` | Applied to the frontend pod only |
+
+Each entry follows the standard Kubernetes `env` schema:
+
+```yaml
+extraEnv:
+  - name: MY_VAR
+    value: "plain value"
+  - name: SECRET_VAR
+    valueFrom:
+      secretKeyRef:
+        name: my-secret
+        key: my-key
+  - name: POD_IP
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
+```
 
 ## Storage Class
 
