@@ -4,39 +4,49 @@ The Zimmporter frontend is a **Next.js** application with **React** that provide
 
 ## Stack
 
-- **Framework:** Next.js (App Router, standalone output)
-- **UI:** React, PrimeReact, Bootstrap 5, PrimeIcons
+- **Framework:** Next.js 16 (App Router, standalone output)
+- **UI:** React 19, PrimeReact, Bootstrap 5, PrimeIcons
 - **State / Data:** TanStack React Query, Axios
+- **Auth:** NextAuth v5 (OIDC + GitHub providers)
 - **Testing:** Vitest, React Testing Library, jsdom
-- **Linting:** ESLint (Next.js config)
+- **Linting / Formatting:** Biome
 
 ## Project Structure
 
 ```
 zimmporter-front/
 ├── src/
-│   ├── app/               # Next.js App Router pages
-│   │   ├── page.tsx       # Redirects to /search
-│   │   ├── search/        # Search and download page
-│   │   ├── jobs/          # Job list and detail pages
-│   │   ├── layout.tsx     # Root layout, providers, config injection
-│   │   ├── not-found.tsx  # Custom 404
-│   │   └── globals.css    # Global styles, PrimeReact + Bootstrap
-│   ├── components/        # Reusable UI components
-│   │   ├── Header/        # Navigation header with health check
-│   │   ├── Footer/        # Version info footer
-│   │   ├── JobRow/        # Job list item component
-│   │   ├── StatusBadge/   # Status indicator badge
-│   │   ├── PageContainer/ # Content layout wrapper
-│   │   ├── Lightfall/     # WebGL animated background
-│   │   └── LightfallBackground/ # Background wrapper component
-│   ├── lib/               # API client (Axios) and runtime config
-│   ├── hooks/             # Custom React hooks (useJobPolling)
-│   ├── providers/         # TanStack Query provider
-│   ├── types/             # TypeScript interfaces (SearchResult, JobStatusResponse, Song, etc.)
-│   └── config/            # Version info
-├── tests/                 # Vitest test suite
-├── public/                # Static assets
-├── Dockerfile             # Container image (multi-stage, standalone)
-└── package.json           # Dependencies and scripts
+│   ├── proxy.ts            # Next.js middleware — auth redirect
+│   ├── app/
+│   │   ├── (app)/          # Authenticated app pages (layout + pages)
+│   │   ├── (auth)/         # Auth pages (login)
+│   │   ├── api/            # API routes (config, nextauth)
+│   │   ├── layout.tsx      # Root layout
+│   │   ├── not-found.tsx   # Custom 404
+│   │   └── globals.css     # Global styles
+│   ├── components/
+│   │   ├── Header/         # Navigation header (brand, nav links, health dots, avatar)
+│   │   ├── Footer/         # Version info footer
+│   │   ├── ApiKeyErrorOverlay.tsx
+│   │   ├── AuthConflictOverlay.tsx
+│   │   ├── SocialLoginErrorOverlay.tsx
+│   │   └── ...
+│   ├── lib/
+│   │   ├── api.ts          # Axios client with auth interceptors
+│   │   ├── auth.ts         # NextAuth v5 config
+│   │   └── config.ts       # Runtime config (useSocialLogin, apiUrl, apiKey)
+│   ├── hooks/              # useJobPolling
+│   ├── providers/          # auth-provider, query-provider
+│   ├── types/              # TypeScript interfaces + next-auth.d.ts
+│   └── __tests__/          # Vitest test suite
+├── Dockerfile              # Multi-stage standalone image
+└── package.json
 ```
+
+## Key Features
+
+- Search YouTube Music for albums and playlists
+- Multi-select results with batch download
+- Real-time job progress via polling
+- Optional social login (OIDC / GitHub) or API key auth
+- Auth overlays guide users when configuration is missing

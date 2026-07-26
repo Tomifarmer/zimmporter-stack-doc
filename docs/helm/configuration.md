@@ -16,8 +16,12 @@
 | Parameter | Default | Description |
 |---|---|---|
 | `api.replicas` | `1` | API server replicas |
-| `api.env.REQUIRE_AUTH` | `"false"` | Enable API key authentication |
+| `api.env.USE_SIMPLE_AUTH` | `"false"` | Enable API key authentication |
+| `api.env.USE_SOCIAL_LOGIN` | `"false"` | Enable social login (OIDC/GitHub) Bearer token authentication |
 | `api.env.CORS_ALLOWED_ORIGINS` | `"*"` | CORS allowed origins |
+| `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
+| `api.env.OIDC_CLIENT_ID` | `""` | OIDC client ID (audience) |
+| `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
 
 ## Worker
 
@@ -33,6 +37,12 @@
 |---|---|---|
 | `frontend.replicas` | `1` | Frontend replicas |
 | `frontend.env.API_URL` | `""` | Backend API URL (auto-derived when empty) |
+| `frontend.env.USE_SOCIAL_LOGIN` | `"false"` | Enable social login (OIDC/GitHub) authentication |
+| `frontend.env.USE_SIMPLE_AUTH` | `"false"` | Enable API key authentication |
+| `frontend.env.OIDC_NAME` | `"OIDC"` | OIDC provider display name |
+| `frontend.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL |
+| `frontend.env.OIDC_CLIENT_ID` | `""` | OIDC client ID |
+| `frontend.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID |
 
 ## Ingress
 
@@ -82,6 +92,9 @@ Set `mariadb.external.enabled: true` and provide `mariadb.external.host` / `mari
 | Parameter | Default | Description |
 |---|---|---|
 | `auth.apiKey` | `""` | API key for `X-API-Key` header |
+| `auth.oidcClientSecret` | `""` | OIDC provider client secret |
+| `auth.githubClientSecret` | `""` | GitHub OAuth App client secret |
+| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret |
 | `auth.existingSecret` | `""` | Use existing secret instead of chart-generated one |
 
 ## Celery

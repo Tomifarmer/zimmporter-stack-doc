@@ -17,10 +17,24 @@
 | `AWS_BUCKET` | Yes | — | Target bucket name |
 | `AWS_DEFAULT_REGION` | No | `us-east-1` | S3 region |
 | `AWS_USE_SSL` | No | `true` | Use HTTPS for S3 connections |
-| `REQUIRE_AUTH` | No | `""` | Set to `"true"` to enable API key auth |
+| `USE_SIMPLE_AUTH` | No | `""` | Set to `"true"` to enable API key auth |
+| `USE_SOCIAL_LOGIN` | No | `""` | Set to `"true"` to enable social login (OIDC/GitHub) |
 | `API_KEY` | No | — | Secret key for `X-API-Key` header auth |
+| `OIDC_ISSUER_URL` | No | — | OIDC issuer URL (e.g. `https://accounts.google.com`) |
+| `OIDC_CLIENT_ID` | No | — | OIDC client ID |
+| `GITHUB_CLIENT_ID` | No | — | GitHub OAuth App client ID |
 | `CORS_ALLOWED_ORIGINS` | No | `*` | Comma-separated allowed CORS origins |
 | `CA_CERT` | No | — | Path to custom CA certificate bundle |
+
+## Authentication
+
+Three optional auth methods, independently togglable:
+
+- **API key** — Set `USE_SIMPLE_AUTH=true` and configure `API_KEY`. Clients must send an `X-API-Key` header.
+- **OIDC Bearer token** — Set `USE_SOCIAL_LOGIN=true`, `OIDC_ISSUER_URL`, and `OIDC_CLIENT_ID`. Tokens validated against the issuer's JWKS endpoint with key caching.
+- **GitHub Bearer token** — Set `USE_SOCIAL_LOGIN=true` and `GITHUB_CLIENT_ID`. Tokens validated via the GitHub API.
+
+The `/health` endpoint is always exempt from auth. If multiple methods are enabled, any one suffices. Authenticated users via Bearer token are recorded in the `requested_by` field on jobs.
 
 ## Docker Compose
 
