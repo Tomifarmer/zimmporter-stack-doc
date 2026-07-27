@@ -22,7 +22,9 @@
 | `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
 | `api.env.OIDC_CLIENT_ID` | `""` | OIDC client ID (audience) |
 | `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
-| `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extraenv)) |
+| `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extra-environment-variables)) |
+| `api.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
+| `api.extraVolumeMounts` | `[]` | Additional container volume mounts (see [extraVolumes](#extra-volumes-volume-mounts)) |
 
 ## Worker
 
@@ -31,7 +33,9 @@
 | `worker.replicas` | `1` | Celery worker replicas |
 | `worker.concurrency` | `4` | Parallel downloads per worker |
 | `worker.pool` | `prefork` | Celery pool type |
-| `worker.extraEnv` | `[]` | Additional env vars for the worker pod (see [extraEnv](#extraenv)) |
+| `worker.extraEnv` | `[]` | Additional env vars for the worker pod (see [extraEnv](#extra-environment-variables)) |
+| `worker.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
+| `worker.extraVolumeMounts` | `[]` | Additional container volume mounts (see [extraVolumes](#extra-volumes-volume-mounts)) |
 
 ## Frontend
 
@@ -45,7 +49,9 @@
 | `frontend.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL |
 | `frontend.env.OIDC_CLIENT_ID` | `""` | OIDC client ID |
 | `frontend.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID |
-| `frontend.extraEnv` | `[]` | Additional env vars for the frontend pod (see [extraEnv](#extraenv)) |
+| `frontend.extraEnv` | `[]` | Additional env vars for the frontend pod (see [extraEnv](#extra-environment-variables)) |
+| `frontend.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
+| `frontend.extraVolumeMounts` | `[]` | Additional container volume mounts (see [extraVolumes](#extra-volumes-volume-mounts)) |
 
 ## Ingress
 
@@ -59,19 +65,23 @@
 ## S3
 
 | Parameter | Default | Description |
-|---|---|---|
+|---|---|---|---|
 | `s3.endpoint` | `""` | S3 endpoint host:port |
-| `s3.accessKey` | `""` | S3 access key |
-| `s3.secretKey` | `""` | S3 secret key |
+| `s3.accessKey` | `""` | S3 access key (ignored when `existingSecret` is set) |
+| `s3.secretKey` | `""` | S3 secret key (ignored when `existingSecret` is set) |
 | `s3.bucket` | `""` | S3 bucket name |
 | `s3.useSSL` | `false` | Use HTTPS for S3 |
+| `s3.existingSecret` | `""` | Use existing secret instead of chart-generated s3 secret |
+| `s3.existingSecretKeyMapping.accessKey` | `"access-key"` | Key for S3 access key in existing secret |
+| `s3.existingSecretKeyMapping.secretKey` | `"secret-key"` | Key for S3 secret key in existing secret |
 
 ## MariaDB
 
 | Parameter | Default | Description |
-|---|---|---|
+|---|---|---|---|
 | `mariadb.external.enabled` | `false` | Use external MariaDB instead of in-cluster |
 | `mariadb.image` | `mariadb:11` | MariaDB image |
+| `mariadb.podSecurityContext` | `{runAsNonRoot: true, fsGroup: 999}` | Pod-level security context |
 | `mariadb.persistence.size` | `10Gi` | PVC size |
 
 ## Valkey
@@ -81,6 +91,34 @@
 | `valkey.external.enabled` | `false` | Use external Valkey/Redis instead of in-cluster |
 | `valkey.image` | `valkey/valkey:latest` | Valkey image |
 | `valkey.persistence.size` | `1Gi` | PVC size |
+
+## Extra Volumes / Volume Mounts
+
+Each component (`api`, `worker`, `frontend`) accepts `extraVolumes` and
+`extraVolumeMounts` lists to mount additional volumes into the pod.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `api.extraVolumes` | `[]` | Applied to the API pod |
+| `api.extraVolumeMounts` | `[]` | Applied to the API container |
+| `worker.extraVolumes` | `[]` | Applied to the worker pod (in addition to default `temp-data`/`tmp` volumes) |
+| `worker.extraVolumeMounts` | `[]` | Applied to the worker container (in addition to default mounts) |
+| `frontend.extraVolumes` | `[]` | Applied to the frontend pod |
+| `frontend.extraVolumeMounts` | `[]` | Applied to the frontend container |
+
+Each entry follows the standard Kubernetes `volume` / `volumeMount` schema:
+
+```yaml
+frontend:
+  extraVolumes:
+    - name: config
+      configMap:
+        name: my-config
+  extraVolumeMounts:
+    - name: config
+      mountPath: /etc/config
+      readOnly: true
+```
 
 ## Extra Environment Variables
 
@@ -129,7 +167,7 @@ Set `mariadb.external.enabled: true` and provide `mariadb.external.host` / `mari
 | `auth.oidcClientSecret` | `""` | OIDC provider client secret |
 | `auth.githubClientSecret` | `""` | GitHub OAuth App client secret |
 | `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret |
-| `auth.existingSecret` | `""` | Use existing secret instead of chart-generated one |
+| `auth.existingSecret` | `""` | Use existing secret instead of chart-generated `*-api-and-front-auth` |
 
 ## Celery
 
