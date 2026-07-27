@@ -166,7 +166,7 @@ Set `mariadb.external.enabled: true` and provide `mariadb.external.host` / `mari
 | `auth.apiKey` | `""` | API key for `X-API-Key` header |
 | `auth.oidcClientSecret` | `""` | OIDC provider client secret |
 | `auth.githubClientSecret` | `""` | GitHub OAuth App client secret |
-| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret |
+| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret (only included when `frontend.env.USE_SOCIAL_LOGIN=true`) |
 | `auth.existingSecret` | `""` | Use existing secret instead of chart-generated `*-api-and-front-auth` |
 
 ## Celery
