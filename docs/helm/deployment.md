@@ -52,6 +52,12 @@ images:
 api:
   replicas: 2
 
+frontend:
+  env:
+    # Must include the scheme (https://) when using TLS ingress,
+    # otherwise the frontend treats it as a relative path.
+    API_URL: "https://api.zimmporter.example.com"
+
 ingress:
   api:
     enabled: true

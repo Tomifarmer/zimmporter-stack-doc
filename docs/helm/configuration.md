@@ -14,8 +14,9 @@
 ## API
 
 | Parameter | Default | Description |
-|---|---|---|
+|---|---|---|---|
 | `api.replicas` | `1` | API server replicas |
+| `api.resources` | `{requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 512Mi}}` | Container resource limits/requests |
 | `api.env.USE_SIMPLE_AUTH` | `"false"` | Enable API key authentication |
 | `api.env.USE_SOCIAL_LOGIN` | `"false"` | Enable social login (OIDC/GitHub) Bearer token authentication |
 | `api.env.CORS_ALLOWED_ORIGINS` | `"*"` | CORS allowed origins |
@@ -29,8 +30,9 @@
 ## Worker
 
 | Parameter | Default | Description |
-|---|---|---|
+|---|---|---|---|
 | `worker.replicas` | `1` | Celery worker replicas |
+| `worker.resources` | `{requests: {cpu: 200m, memory: 256Mi}, limits: {cpu: 1, memory: 1Gi}}` | Container resource limits/requests |
 | `worker.concurrency` | `4` | Parallel downloads per worker |
 | `worker.pool` | `prefork` | Celery pool type |
 | `worker.extraEnv` | `[]` | Additional env vars for the worker pod (see [extraEnv](#extra-environment-variables)) |
@@ -40,9 +42,10 @@
 ## Frontend
 
 | Parameter | Default | Description |
-|---|---|---|
+|---|---|---|---|
 | `frontend.replicas` | `1` | Frontend replicas |
-| `frontend.env.API_URL` | `""` | Backend API URL (auto-derived when empty) |
+| `frontend.resources` | `{requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 512Mi}}` | Container resource limits/requests |
+| `frontend.env.API_URL` | `""` | Backend API URL (auto-derived from in-cluster service when empty; set to full `https://` URL when using TLS ingress) |
 | `frontend.env.USE_SOCIAL_LOGIN` | `"false"` | Enable social login (OIDC/GitHub) authentication |
 | `frontend.env.USE_SIMPLE_AUTH` | `"false"` | Enable API key authentication |
 | `frontend.env.OIDC_NAME` | `"OIDC"` | OIDC provider display name |
@@ -81,15 +84,17 @@
 |---|---|---|---|
 | `mariadb.external.enabled` | `false` | Use external MariaDB instead of in-cluster |
 | `mariadb.image` | `mariadb:11` | MariaDB image |
+| `mariadb.resources` | `{requests: {cpu: 200m, memory: 512Mi}, limits: {cpu: 1, memory: 1Gi}}` | Container resource limits/requests |
 | `mariadb.podSecurityContext` | `{runAsNonRoot: true, fsGroup: 999}` | Pod-level security context |
 | `mariadb.persistence.size` | `10Gi` | PVC size |
 
 ## Valkey
 
 | Parameter | Default | Description |
-|---|---|---|
+|---|---|---|---|
 | `valkey.external.enabled` | `false` | Use external Valkey/Redis instead of in-cluster |
 | `valkey.image` | `valkey/valkey:latest` | Valkey image |
+| `valkey.resources` | `{requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 512Mi}}` | Container resource limits/requests |
 | `valkey.persistence.size` | `1Gi` | PVC size |
 
 ## Extra Volumes / Volume Mounts
@@ -164,9 +169,9 @@ Set `mariadb.external.enabled: true` and provide `mariadb.external.host` / `mari
 | Parameter | Default | Description |
 |---|---|---|
 | `auth.apiKey` | `""` | API key for `X-API-Key` header |
-| `auth.oidcClientSecret` | `""` | OIDC provider client secret |
-| `auth.githubClientSecret` | `""` | GitHub OAuth App client secret |
-| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret (only included when `frontend.env.USE_SOCIAL_LOGIN=true`) |
+| `auth.oidcClientSecret` | `""` | OIDC provider client secret (only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
+| `auth.githubClientSecret` | `""` | GitHub OAuth App client secret (only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
+| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret (only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
 | `auth.existingSecret` | `""` | Use existing secret instead of chart-generated `*-api-and-front-auth` |
 
 ## Celery
