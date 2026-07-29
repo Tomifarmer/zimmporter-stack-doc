@@ -92,6 +92,7 @@
 
 | Parameter | Default | Description |
 |---|---|---|---|
+| `valkey.podSecurityContext` | `{runAsNonRoot: true, fsGroup: 999}` | Pod-level security context |
 | `valkey.external.enabled` | `false` | Use external Valkey/Redis instead of in-cluster |
 | `valkey.image` | `valkey/valkey:latest` | Valkey image |
 | `valkey.resources` | `{requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 512Mi}}` | Container resource limits/requests |
