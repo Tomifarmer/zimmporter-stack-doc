@@ -9,7 +9,7 @@ The Zimmporter Helm chart deploys the full stack to Kubernetes.
 - **Services:** ClusterIP for each component (4 when in-cluster, 2 when external)
 - **Ingress:** API and Frontend (optional, separately configurable)
 - **ConfigMaps:** API config, Worker config, Frontend config (non-sensitive env vars)
-- **Secrets:** Database credentials (optional), S3 credentials (optional), API and frontend auth (optional)
+- **Secrets:** Database credentials (optional), S3 credentials, API and frontend auth, OIDC credentials (optional), GitHub OAuth credentials (optional)
 
 ## Prerequisites
 

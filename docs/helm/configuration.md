@@ -21,7 +21,6 @@
 | `api.env.USE_SOCIAL_LOGIN` | `"false"` | Enable social login (OIDC/GitHub) Bearer token authentication |
 | `api.env.CORS_ALLOWED_ORIGINS` | `"*"` | CORS allowed origins |
 | `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
-| `api.env.OIDC_CLIENT_ID` | `""` | OIDC client ID (audience) |
 | `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
 | `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extra-environment-variables)) |
 | `api.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
@@ -50,7 +49,6 @@
 | `frontend.env.USE_SIMPLE_AUTH` | `"false"` | Enable API key authentication |
 | `frontend.env.OIDC_NAME` | `"OIDC"` | OIDC provider display name |
 | `frontend.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL |
-| `frontend.env.OIDC_CLIENT_ID` | `""` | OIDC client ID |
 | `frontend.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID |
 | `frontend.extraEnv` | `[]` | Additional env vars for the frontend pod (see [extraEnv](#extra-environment-variables)) |
 | `frontend.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
@@ -169,11 +167,20 @@ Set `mariadb.external.enabled: true` and provide `mariadb.external.host` / `mari
 
 | Parameter | Default | Description |
 |---|---|---|
-| `auth.apiKey` | `""` | API key for `X-API-Key` header |
-| `auth.oidcClientSecret` | `""` | OIDC provider client secret (only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
-| `auth.githubClientSecret` | `""` | GitHub OAuth App client secret (only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
-| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption secret (only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
-| `auth.existingSecret` | `""` | Use existing secret instead of chart-generated `*-api-and-front-auth` |
+| `auth.apiKey` | `""` | API key for `X-API-Key` header (chart-generated `*-api-and-front-auth` secret) |
+| `auth.apiKeyExistingSecret` | `""` | Name of an existing Secret containing the API key (overrides chart-generated secret) |
+| `auth.apiKeyExistingSecretKey` | `"api-key"` | Key for the API key within `apiKeyExistingSecret` |
+| `auth.oidcClientId` | `""` | OIDC client ID (injected into API + frontend; when set, overrides the ConfigMap value via the `*-auth-oidc` secret) |
+| `auth.oidcClientSecret` | `""` | OIDC provider client secret (injected only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
+| `auth.githubClientId` | `""` | GitHub OAuth App client ID (injected into API + frontend; when set, overrides the ConfigMap value via the `*-auth-github` secret) |
+| `auth.githubClientSecret` | `""` | GitHub OAuth App client secret (injected only when `frontend.env.USE_SOCIAL_LOGIN=true`) |
+| `auth.authSecret` | `"dev-secret-change-in-production"` | NextAuth encryption key — signs JWTs and encrypts session cookies. Generate one with `openssl rand -base64 32`. (Injected only when `USE_SOCIAL_LOGIN=true`) |
+| `auth.oidc.existingSecret` | `""` | Use existing secret instead of chart-generated `*-auth-oidc` |
+| `auth.oidc.existingSecretKeyMapping.clientId` | `"client-id"` | Key for OIDC client ID in the existing secret |
+| `auth.oidc.existingSecretKeyMapping.clientSecret` | `"client-secret"` | Key for OIDC client secret in the existing secret |
+| `auth.github.existingSecret` | `""` | Use existing secret instead of chart-generated `*-auth-github` |
+| `auth.github.existingSecretKeyMapping.clientId` | `"github-client-id"` | Key for GitHub client ID in the existing secret |
+| `auth.github.existingSecretKeyMapping.clientSecret` | `"github-client-secret"` | Key for GitHub client secret in the existing secret |
 
 ## Celery
 
