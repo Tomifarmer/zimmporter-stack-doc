@@ -23,6 +23,9 @@
 | `OIDC_ISSUER_URL` | No | — | OIDC issuer URL (e.g. `https://accounts.google.com`) |
 | `OIDC_CLIENT_ID` | No | — | OIDC client ID |
 | `GITHUB_CLIENT_ID` | No | — | GitHub OAuth App client ID |
+| `JOB_RETENTION_DAYS` | No | `0` | Number of days to keep job history (`0` = never purge) |
+| `JOB_STALLED_TIMEOUT` | No | `5` | Minutes after which a stuck `pending`/`running` job is auto-failed (worker crash guard) |
+| `API_PROXY_FETCH` | No | `""` | Set to `"true"` to proxy thumbnail fetches through the API; thumbnails are embedded as base64 data URIs in search results (required when the frontend has no internet access) |
 | `CORS_ALLOWED_ORIGINS` | No | `*` | Comma-separated allowed CORS origins |
 | `CA_CERT` | No | — | Path to custom CA certificate bundle |
 

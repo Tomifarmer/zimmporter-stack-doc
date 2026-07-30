@@ -6,10 +6,10 @@ Dashboard with system health cards (API, Redis, Celery, MariaDB), job overview s
 
 ## Search (`/search`)
 
-The main interface for searching YouTube Music. Supports search by album and playlist.
+The main interface for searching YouTube Music. Supports search by album, featured playlist, or community playlist.
 
-- Search input with type selector (albums / playlists) and result limit
-- Results displayed as cards with album art
+- Search input with type selector (albums / featured playlists / community playlists) and result limit
+- Results displayed as cards with album art (loaded as base64 data URIs when `API_PROXY_FETCH=true`, no separate image requests)
 - Multi-select results with checkboxes
 - Concurrent download slider (1–32, default 4)
 - Select All toggle button
