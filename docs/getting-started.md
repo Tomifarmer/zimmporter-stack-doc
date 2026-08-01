@@ -25,7 +25,7 @@ cd zimmporter-api
 docker compose up -d
 ```
 
-This starts the API, Celery worker, MariaDB, Valkey, and connects to an external S3-compatible store.
+This starts the API, Celery worker, MariaDB, Valkey, the BgUtils POT provider, and connects to an external S3-compatible store. The API and worker share a volume for the uploaded YouTube cookies file.
 
 Install and run the frontend:
 
@@ -35,7 +35,7 @@ npm ci
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). If you need to download age-restricted content, upload a YouTube cookies file in **Settings** (`/settings`).
 
 ## Environment Variables
 

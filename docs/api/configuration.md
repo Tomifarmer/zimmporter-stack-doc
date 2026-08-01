@@ -26,6 +26,10 @@
 | `JOB_RETENTION_DAYS` | No | `0` | Number of days to keep job history (`0` = never purge) |
 | `JOB_STALLED_TIMEOUT` | No | `5` | Minutes after which a stuck `pending`/`running` job is auto-failed (worker crash guard) |
 | `API_PROXY_FETCH` | No | `""` | Set to `"true"` to proxy thumbnail fetches through the API; thumbnails are embedded as base64 data URIs in search results (required when the frontend has no internet access) |
+| `INDEX_INTERVAL_MINUTES` | No | `30` | How often (minutes) the API pod dispatches the periodic S3 library index scan (min `1`) |
+| `COOKIE_DIR` | No | `/var/zimmporter/cookies` | Directory holding the shared yt-dlp cookies file (uploaded via `POST /cookies`) |
+| `YTDLP_COOKIEFILE` | No | — | Worker-side path to the cookies file used by yt-dlp for age-restricted downloads |
+| `POT_PROVIDER_URL` | No | — | HTTP URL of a BgUtils yt-dlp POT provider (e.g. `http://bgutil-provider:4416`); unset disables PO-token extraction |
 | `CORS_ALLOWED_ORIGINS` | No | `*` | Comma-separated allowed CORS origins |
 | `CA_CERT` | No | — | Path to custom CA certificate bundle |
 
@@ -37,7 +41,7 @@ Three optional auth methods, independently togglable:
 - **OIDC Bearer token** — Set `USE_SOCIAL_LOGIN=true`, `OIDC_ISSUER_URL`, and `OIDC_CLIENT_ID`. Tokens validated against the issuer's JWKS endpoint with key caching.
 - **GitHub Bearer token** — Set `USE_SOCIAL_LOGIN=true` and `GITHUB_CLIENT_ID`. Tokens validated via the GitHub API.
 
-The `/health` endpoint is always exempt from auth. If multiple methods are enabled, any one suffices. Authenticated users via Bearer token are recorded in the `requested_by` field on jobs.
+The `/health` and `/thumbnail` endpoints are always exempt from auth. If multiple methods are enabled, any one suffices. Authenticated users via Bearer token are recorded in the `requested_by` field on jobs.
 
 ## Docker Compose
 
@@ -47,8 +51,9 @@ The repository includes a `docker-compose.yml` that starts:
 - Celery worker
 - MariaDB
 - Valkey (Redis-compatible, used as Celery broker and result backend)
+- `bgutil-provider` (BgUtils yt-dlp POT provider, exposed to the worker via `POT_PROVIDER_URL`)
 
-S3-compatible storage (e.g., MinIO) is expected to be available externally.
+S3-compatible storage (e.g., MinIO) is expected to be available externally. The API and worker share a `cookies_data` volume that holds the uploaded yt-dlp cookies file.
 
 ## Running Tests
 

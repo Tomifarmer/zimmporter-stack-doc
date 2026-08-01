@@ -22,6 +22,8 @@
 | `api.env.CORS_ALLOWED_ORIGINS` | `"*"` | CORS allowed origins |
 | `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
 | `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
+| `api.env.API_PROXY_FETCH` | `"false"` | Proxy thumbnail fetches through the API; thumbnails embedded as base64 data URIs in search results |
+| `api.indexIntervalMinutes` | `30` | How often (minutes) the API pod dispatches the periodic S3 library index scan |
 | `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extra-environment-variables)) |
 | `api.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
 | `api.extraVolumeMounts` | `[]` | Additional container volume mounts (see [extraVolumes](#extra-volumes-volume-mounts)) |
@@ -95,6 +97,38 @@
 | `valkey.image` | `valkey/valkey:latest` | Valkey image |
 | `valkey.resources` | `{requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: 500m, memory: 512Mi}}` | Container resource limits/requests |
 | `valkey.persistence.size` | `1Gi` | PVC size |
+
+## POT Provider (bgutil-provider)
+
+The chart deploys the [BgUtils yt-dlp POT provider](https://github.com/Brainicism/bgutil-ytdlp-pot-provider) and injects its URL into the worker via `POT_PROVIDER_URL`, enabling PO-token extraction for age-restricted content. Disabled by setting `potProvider.enabled: false`.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `potProvider.enabled` | `true` | Deploy the POT provider deployment + service |
+| `potProvider.replicas` | `1` | Number of provider pods |
+| `potProvider.image.repository` | `brainicism/bgutil-ytdlp-pot-provider` | Provider image |
+| `potProvider.image.tag` | `1.3.1` | Provider image tag |
+| `potProvider.port` | `4416` | HTTP port (service + container) |
+| `potProvider.probes.enabled` | `true` | Enable HTTP probes on `/api/v1/health` |
+| `potProvider.resources` | `{requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 256Mi}}` | Container resource limits/requests |
+| `potProvider.podSecurityContext` | `{runAsNonRoot: true}` | Pod-level security context |
+| `potProvider.nodeSelector` / `tolerations` / `affinity` / `extraEnv` | `{}` / `[]` / `{}` / `[]` | Scheduling constraints + extra env |
+
+## Cookies (YouTube auth)
+
+Cookies uploaded through the UI (`POST /cookies` on the API) are stored in a shared volume mounted writable in the API pod and read-only in the worker pod. The worker reads the file via `YTDLP_COOKIEFILE` for age-restricted download auth.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `cookies.dir` | `/var/zimmporter/cookies` | API-side mount path (writable, holds `cookies.txt`) |
+| `cookies.workerMountPath` | `/etc/zimmporter/cookies` | Worker-side mount path (read-only) |
+| `cookies.filename` | `cookies.txt` | Cookie file name inside the shared volume |
+| `cookies.persistence.enabled` | `true` | Create a PVC for the shared cookies volume |
+| `cookies.persistence.storageClass` | `""` | PVC storage class (default cluster `StorageClass` when empty) |
+| `cookies.persistence.accessModes` | `["ReadWriteMany"]` | PVC access modes — must support shared mounts |
+| `cookies.persistence.size` | `1Gi` | PVC size |
+
+The cookies volume requires a `StorageClass` with `ReadWriteMany` access (or a provider supporting shared volumes), since both the API and worker pods mount it.
 
 ## Extra Volumes / Volume Mounts
 

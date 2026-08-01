@@ -30,6 +30,8 @@ zimmporter-front/
 │   │   ├── ApiKeyErrorOverlay.tsx
 │   │   ├── AuthConflictOverlay.tsx
 │   │   ├── SocialLoginErrorOverlay.tsx
+│   │   ├── CookieManager.tsx      # Settings card — upload yt-dlp cookies file
+│   │   ├── CookieStaleBanner.tsx  # Warning banner when cookies are stale
 │   │   └── ...
 │   ├── lib/
 │   │   ├── api.ts          # Axios client with auth interceptors
@@ -48,5 +50,7 @@ zimmporter-front/
 - Search YouTube Music for albums and playlists
 - Multi-select results with batch download
 - Real-time job progress via polling
+- "Already in library" badges on search results
+- Settings page to upload YouTube cookies (with stale-cookie warnings)
 - Optional social login (OIDC / GitHub) or API key auth
 - Auth overlays guide users when configuration is missing

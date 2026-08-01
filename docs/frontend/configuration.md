@@ -20,6 +20,8 @@ Set in `.env.local` for local development, or via container environment at runti
 
 `USE_SOCIAL_LOGIN` and `USE_SIMPLE_AUTH` cannot both be `true`; the app shows an error overlay if both are enabled.
 
+If `API_URL` is set to a value that does not start with `http://` or `https://`, the server logs an error and exits with code 1 at startup.
+
 The config is injected server-side into `window.__RUNTIME_CONFIG__` at page render time and accessed client-side via `lib/config.ts`.
 
 ## Scripts

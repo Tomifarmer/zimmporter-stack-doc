@@ -19,6 +19,9 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 - Upload finished files to S3-compatible storage
 - Track job status via Celery result backend
 - Auth middleware (API key, OIDC Bearer token, or GitHub Bearer token)
+- Flag search results already present in the S3 library (`available` flag, maintained by a periodic index scan)
+- Upload YouTube cookies for age-restricted downloads, with automatic stale-cookie detection
+- PO-token extraction via a BgUtils yt-dlp POT provider
 
 ## Project Structure
 
@@ -26,16 +29,19 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 zimmporter-api/
 ├── api/                 # FastAPI application
 │   ├── app.py           # App factory, lifespan, /health, auth middleware, CORS
+│   ├── scheduler.py     # Periodic S3 library index dispatcher (INDEX_INTERVAL_MINUTES)
 │   ├── models.py        # Pydantic request/response schemas
-│   └── routes/          # Route handlers (search, download, jobs)
+│   └── routes/          # Route handlers (search, download, jobs, cookies, thumbnail)
 ├── db/                  # Database layer
 │   ├── engine.py        # SQLAlchemy engine and session management
-│   └── models.py        # ORM models (Job with requested_by, Song)
+│   └── models.py        # ORM models (Job, Song, AvailableAlbum)
 ├── tasks/               # Celery configuration and task definitions
 │   ├── celery_app.py    # Celery app configuration
-│   └── download.py      # Album/playlist download tasks
+│   ├── download.py      # Album/playlist download tasks
+│   └── index.py         # S3 library index scan task (index_albums)
 ├── zimmporter/          # Core library
 │   ├── core.py          # YouTube search and download orchestration
+│   ├── cookie_health.py # Cookie staleness flag helpers
 │   ├── postprocessors.py# FFmpeg conversion, metadata embedding, S3 upload
 │   ├── cert.py          # Custom CA certificate support
 │   └── _version.py      # Version string
@@ -55,4 +61,4 @@ Three optional auth methods, independently togglable via env vars:
 - **OIDC Bearer token** — `USE_SOCIAL_LOGIN=true` + `OIDC_ISSUER_URL` + `OIDC_CLIENT_ID`. Tokens validated against the issuer's JWKS endpoint.
 - **GitHub Bearer token** — `USE_SOCIAL_LOGIN=true` + `GITHUB_CLIENT_ID`. Tokens validated via GitHub API.
 
-The `/health` endpoint is always open. If multiple methods are enabled, **any** suffices. When a user authenticates via Bearer token, their identity is recorded in the `requested_by` field on jobs.
+The `/health` and `/thumbnail` endpoints are always open. If multiple methods are enabled, **any** suffices. When a user authenticates via Bearer token, their identity is recorded in the `requested_by` field on jobs.

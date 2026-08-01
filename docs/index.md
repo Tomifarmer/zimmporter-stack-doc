@@ -1,6 +1,6 @@
 # Zimmporter Stack
 
-A full-stack music import system. Search YouTube Music, download albums and playlists, convert audio to AAC, embed metadata and cover art, and upload the final files to an S3-compatible bucket.
+A full-stack music import system. Search YouTube Music, download albums and playlists, convert audio to AAC, embed metadata and cover art, and upload the final files to an S3-compatible bucket. Already-downloaded albums are flagged in search results, YouTube cookies can be uploaded for age-restricted content, and a PO-token provider helps bypass bot checks.
 
 ## Components
 

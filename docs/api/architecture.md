@@ -31,6 +31,7 @@ Each Celery worker process uses a `ThreadPoolExecutor` to download, convert, and
 - **ThreadPoolExecutor** (from `concurrent.futures`) manages per-song parallelism within each worker
 - **FFmpeg** runs as a subprocess for audio conversion
 - **Auth middleware** enforces API key (X-API-Key), OIDC Bearer token, or GitHub Bearer token on all routes except `/health`, `/thumbnail`, and OPTIONS preflight
+- **Scheduler** (`api/scheduler.py`) runs inside the API pod and dispatches the S3 library index scan on a timer (no separate Celery beat container)
 
 ## Database Schema
 
@@ -38,10 +39,13 @@ Key tables:
 
 - **jobs** — tracks import job lifecycle (pending, running, success, failed)
 - **songs** — stores individual song metadata and S3 paths
+- **available_albums** — mirrors the current S3 library contents (upserted + pruned by the periodic index scan); used to flag search results already in the library
 
 `jobs` table columns: `id`, `job_type` (album/playlist), `browse_id`, `status`, `message`, `error`, `current_album`, `album_name`, `artist`, `requested_by`, `album_progress`, `total_albums`, `current_song`, `total_songs`, `created_at`, `updated_at`
 
 `songs` table columns: `id`, `job_id` (FK), `title`, `artist`, `album`, `track_number`, `status` (pending/downloading/success/failed), `s3_path`, `error`, `release_date`, `created_at`
+
+`available_albums` columns: `browse_id`, `title`, `artist`, `album`, `updated_at`
 
 ## Valkey Database Usage
 
@@ -49,8 +53,29 @@ Key tables:
 |----------|---------|
 | db 0 | Celery broker |
 | db 1 | Celery result backend |
-| db 2 | Search result cache (5 min TTL) |
-| db 3 | Thumbnail image cache (24 h TTL) |
+| db 2 | Search result cache (5 min TTL) + available-albums index reads |
+| db 3 | Thumbnail image cache (24 h TTL) + cookie staleness flag |
+| db 4 | S3 library index dispatch lock |
+
+## S3 Library Index
+
+Search results are flagged with an `available` boolean when the album/playlist already exists in the S3 library.
+
+1. **Recording** — download tasks (`tasks/download.py`) upsert every successfully downloaded album/playlist into `available_albums` with its exact YT Music `browse_id`.
+2. **Periodic scan** — a dispatcher in the API pod (`api/scheduler.py`) runs every `INDEX_INTERVAL_MINUTES` (default 30) and triggers the Celery task `tasks.index_albums`. The task scans the S3 bucket (`{artist}/{album}/` prefixes), upserts found items, and prunes entries no longer present in S3. A Valkey lock (db 4) ensures multiple API replicas dispatch only once per interval — no Celery beat container is required.
+3. **Search enrichment** — `GET /search` matches each result against the index by `browse_id` (or normalized artist+title) after the cache read, so results stay fresh.
+
+## Cookies (YouTube auth)
+
+Age-restricted downloads can be authenticated with a shared yt-dlp cookies file:
+
+1. **Upload** — `POST /cookies` accepts a Netscape-format `cookies.txt` (multipart), validates it, and writes it atomically into a shared volume (`COOKIE_DIR`). `GET /cookies` exposes metadata only — never contents.
+2. **Stale detection** — when yt-dlp reports "Sign in to confirm you're not a bot", invalid cookies, or cookie rotation during a download, the worker flags the cookies as stale (`zimmporter/cookie_health.py`, Valkey db 3). Downloads then run anonymously until a fresh upload clears the flag.
+3. **Workers** — each job re-applies the cookie config from `YTDLP_COOKIEFILE` without a restart.
+
+## POT Provider (BgUtils)
+
+When `POT_PROVIDER_URL` is set, yt-dlp requests PO (Proof of Origin) tokens from a [BgUtils yt-dlp POT provider](https://github.com/Brainicism/bgutil-ytdlp-pot-provider) server to bypass YouTube bot checks. A `bgutil-provider` service is included in docker-compose and the Helm chart.
 
 ## Thumbnail Proxy
 

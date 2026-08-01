@@ -30,7 +30,7 @@ helm upgrade zimmporter oci://ghcr.io/tomifarmer/zimmporter \
 helm uninstall zimmporter
 ```
 
-Persistent volume claims for Valkey and MariaDB must be deleted manually:
+Persistent volume claims for Valkey, MariaDB, and the shared cookies volume must be deleted manually:
 
 ```bash
 kubectl delete pvc -l app.kubernetes.io/instance=zimmporter
