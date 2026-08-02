@@ -10,9 +10,11 @@ The Zimmporter Helm chart deploys the full stack to Kubernetes.
 - **Ingress:** API and Frontend (optional, separately configurable)
 - **ConfigMaps:** API config, Worker config, Frontend config (non-sensitive env vars)
 - **PersistentVolumeClaims:** Cookies (shared RWX volume for yt-dlp cookies), plus MariaDB and Valkey
-- **Secrets:** Database credentials (optional), S3 credentials, API and frontend auth, OIDC credentials (optional), GitHub OAuth credentials (optional)
+- **Secrets:** Database credentials (optional), S3 credentials, Navidrome credentials (optional), API and frontend auth, OIDC credentials (optional), GitHub OAuth credentials (optional)
 
-The API pod also runs the periodic S3 library index dispatcher (`INDEX_INTERVAL_MINUTES`, default 30).
+The API pod also runs the periodic library index dispatcher (`INDEX_INTERVAL_MINUTES`, default 30; `INDEX_SOURCE` selects `s3`, `navidrome`, or `both`).
+
+The API, worker, and frontend deployments carry a `checksum/config` annotation, so changing any ConfigMap value (e.g. `api.indexSource` or `navidrome.*`) automatically rolls the affected pods after `helm upgrade` — no manual restart needed.
 
 ## Prerequisites
 

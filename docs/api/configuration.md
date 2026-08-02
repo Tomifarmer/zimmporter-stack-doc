@@ -26,7 +26,11 @@
 | `JOB_RETENTION_DAYS` | No | `0` | Number of days to keep job history (`0` = never purge) |
 | `JOB_STALLED_TIMEOUT` | No | `5` | Minutes after which a stuck `pending`/`running` job is auto-failed (worker crash guard) |
 | `API_PROXY_FETCH` | No | `""` | Set to `"true"` to proxy thumbnail fetches through the API; thumbnails are embedded as base64 data URIs in search results (required when the frontend has no internet access) |
-| `INDEX_INTERVAL_MINUTES` | No | `30` | How often (minutes) the API pod dispatches the periodic S3 library index scan (min `1`) |
+| `INDEX_INTERVAL_MINUTES` | No | `30` | How often (minutes) the API pod dispatches the periodic library index scan (min `1`) |
+| `INDEX_SOURCE` | No | `s3` | Which library sources feed the `available_albums` index: `s3` (S3 prefix scan), `navidrome`, or `both` |
+| `NAVIDROME_URL` | No | — | Base URL of the Navidrome server (worker-side; required when `INDEX_SOURCE` is `navidrome` or `both`) |
+| `NAVIDROME_USER` | No | — | Subsonic API username for Navidrome (worker-side) |
+| `NAVIDROME_PASS` | No | — | Subsonic API password for Navidrome (worker-side) |
 | `COOKIE_DIR` | No | `/var/zimmporter/cookies` | Directory holding the shared yt-dlp cookies file (uploaded via `POST /cookies`) |
 | `YTDLP_COOKIEFILE` | No | — | Worker-side path to the cookies file used by yt-dlp for age-restricted downloads |
 | `POT_PROVIDER_URL` | No | — | HTTP URL of a BgUtils yt-dlp POT provider (e.g. `http://bgutil-provider:4416`); unset disables PO-token extraction |

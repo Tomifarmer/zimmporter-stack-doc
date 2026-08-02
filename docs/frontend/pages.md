@@ -11,7 +11,7 @@ The main interface for searching YouTube Music. Supports search by album, featur
 - Search input with type selector (albums / featured playlists / community playlists) and result limit
 - Search input is auto-focused on page load; typing anywhere on the page (when not focused on another input) starts or refines the query
 - Results displayed as cards with album art (loaded as base64 data URIs when `API_PROXY_FETCH=true`, no separate image requests)
-- Green checkmark badge on covers of albums/playlists already in the S3 library (`available` flag from the API)
+- Green checkmark badge on covers of albums/playlists already in the library (`available` flag from the API)
 - Multi-select results with checkboxes
 - Concurrent download slider (1–32, default 4)
 - Select All toggle button

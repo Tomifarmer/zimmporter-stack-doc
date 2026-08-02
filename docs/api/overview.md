@@ -19,7 +19,7 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 - Upload finished files to S3-compatible storage
 - Track job status via Celery result backend
 - Auth middleware (API key, OIDC Bearer token, or GitHub Bearer token)
-- Flag search results already present in the S3 library (`available` flag, maintained by a periodic index scan)
+- Flag search results already present in the library (`available` flag, maintained by a periodic index scan sourced from S3 and/or Navidrome)
 - Upload YouTube cookies for age-restricted downloads, with automatic stale-cookie detection
 - PO-token extraction via a BgUtils yt-dlp POT provider
 
@@ -29,7 +29,7 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 zimmporter-api/
 ├── api/                 # FastAPI application
 │   ├── app.py           # App factory, lifespan, /health, auth middleware, CORS
-│   ├── scheduler.py     # Periodic S3 library index dispatcher (INDEX_INTERVAL_MINUTES)
+│   ├── scheduler.py     # Periodic library index dispatcher (INDEX_INTERVAL_MINUTES, INDEX_SOURCE)
 │   ├── models.py        # Pydantic request/response schemas
 │   └── routes/          # Route handlers (search, download, jobs, cookies, thumbnail)
 ├── db/                  # Database layer
@@ -38,11 +38,12 @@ zimmporter-api/
 ├── tasks/               # Celery configuration and task definitions
 │   ├── celery_app.py    # Celery app configuration
 │   ├── download.py      # Album/playlist download tasks
-│   └── index.py         # S3 library index scan task (index_albums)
+│   └── index.py         # Library index tasks (index_albums, index_navidrome)
 ├── zimmporter/          # Core library
 │   ├── core.py          # YouTube search and download orchestration
 │   ├── cookie_health.py # Cookie staleness flag helpers
 │   ├── postprocessors.py# FFmpeg conversion, metadata embedding, S3 upload
+│   ├── navidrome.py     # Navidrome Subsonic API client (library index source)
 │   ├── cert.py          # Custom CA certificate support
 │   └── _version.py      # Version string
 ├── tests/               # pytest test suite

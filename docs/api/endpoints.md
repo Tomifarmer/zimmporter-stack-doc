@@ -24,7 +24,7 @@ GET /search?q={query}&type={albums|featured_playlists|community_playlists}&limit
 
 Results are cached in Valkey for 5 minutes.
 
-Each result includes an `available` boolean that flags albums/playlists already present in the S3 library. Matching is by exact YT Music `browse_id` (recorded from successful download jobs) or normalized artist+title, sourced from the `available_albums` table maintained by the periodic S3 index scan.
+Each result includes an `available` boolean that flags albums/playlists already present in the library. Matching is by exact YT Music `browse_id` (recorded from successful download jobs) or normalized artist+title, sourced from the `available_albums` table maintained by the periodic library index scan (S3 and/or Navidrome, selected via `INDEX_SOURCE`).
 
 When `API_PROXY_FETCH=true` is set, the `thumbnail` field in each result is a **base64 data URI** (`data:image/jpeg;base64,...`) instead of a raw CDN URL. Thumbnails are fetched concurrently (up to 10 at a time) through the API's outbound proxy, cached in Valkey db 3 for 24 hours, and embedded directly into the response. This eliminates additional HTTP requests from the frontend for thumbnail images.
 

@@ -23,7 +23,8 @@
 | `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
 | `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
 | `api.env.API_PROXY_FETCH` | `"false"` | Proxy thumbnail fetches through the API; thumbnails embedded as base64 data URIs in search results |
-| `api.indexIntervalMinutes` | `30` | How often (minutes) the API pod dispatches the periodic S3 library index scan |
+| `api.indexSource` | `"s3"` | Which library sources feed the available-albums index (`INDEX_SOURCE`): `s3` (default), `navidrome`, or `both` |
+| `api.indexIntervalMinutes` | `30` | How often (minutes) the API pod dispatches the periodic library index scan |
 | `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extra-environment-variables)) |
 | `api.extraVolumes` | `[]` | Additional pod-level volumes (see [extraVolumes](#extra-volumes-volume-mounts)) |
 | `api.extraVolumeMounts` | `[]` | Additional container volume mounts (see [extraVolumes](#extra-volumes-volume-mounts)) |
@@ -78,6 +79,26 @@
 | `s3.existingSecretKeyMapping.accessKey` | `"access-key"` | Key for S3 access key in existing secret |
 | `s3.existingSecretKeyMapping.secretKey` | `"secret-key"` | Key for S3 secret key in existing secret |
 
+## Navidrome (optional index source)
+
+When `api.indexSource` is `navidrome` or `both`, the worker queries
+Navidrome's Subsonic API (`getAlbumList2`) to populate the available-albums
+index — a tag-accurate view of the library.
+
+| Parameter | Default | Description |
+|---|---|---|
+| `navidrome.url` | `""` | Navidrome base URL (worker `NAVIDROME_URL`) |
+| `navidrome.user` | `""` | Subsonic API username (stored in the generated secret; see note below) |
+| `navidrome.password` | `""` | Subsonic API password (worker `NAVIDROME_PASS`; ignored when `existingSecret` is set) |
+| `navidrome.existingSecret` | `""` | Use existing secret instead of chart-generated navidrome secret |
+| `navidrome.existingSecretKeyMapping.user` | `"user"` | Key for the username in the existing secret |
+| `navidrome.existingSecretKeyMapping.password` | `"password"` | Key for the password in the existing secret |
+
+`NAVIDROME_USER` and `NAVIDROME_PASS` are both injected into the worker from the
+navidrome secret (`navidrome.existingSecret`, or the chart-generated one when
+`navidrome.password` is set). When using an existing secret, the username is read from
+the secret's `user` key — `navidrome.user` is **not** used.
+
 ## MariaDB
 
 | Parameter | Default | Description |
@@ -109,7 +130,8 @@ The chart deploys the [BgUtils yt-dlp POT provider](https://github.com/Brainicis
 | `potProvider.image.repository` | `brainicism/bgutil-ytdlp-pot-provider` | Provider image |
 | `potProvider.image.tag` | `1.3.1` | Provider image tag |
 | `potProvider.port` | `4416` | HTTP port (service + container) |
-| `potProvider.probes.enabled` | `true` | Enable HTTP probes on `/api/v1/health` |
+| `potProvider.terminationGracePeriodSeconds` | `5` | Pod termination grace period (the provider doesn't exit gracefully on SIGTERM, so a short value avoids the default 30s hang) |
+| `potProvider.probes.enabled` | `true` | Enable HTTP probes on `/ping` |
 | `potProvider.resources` | `{requests: {cpu: 50m, memory: 64Mi}, limits: {cpu: 200m, memory: 256Mi}}` | Container resource limits/requests |
 | `potProvider.podSecurityContext` | `{runAsNonRoot: true}` | Pod-level security context |
 | `potProvider.nodeSelector` / `tolerations` / `affinity` / `extraEnv` | `{}` / `[]` / `{}` / `[]` | Scheduling constraints + extra env |
