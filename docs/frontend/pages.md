@@ -23,7 +23,7 @@ After starting a download, redirects to the job detail page.
 
 Displays all import jobs with pagination (20 per page):
 
-- A single interactive toolbar of status pills (Total / Running / Completed / Partial / Failed) — clicking a pill filters the table, each pill shows its live count
+- A single interactive toolbar of status pills (Total / Running / Completed / Partial / Failed) — clicking a pill filters the table, each pill shows its live count. Filtering is applied **server-side** (`status` param on `GET /jobs`), so pagination pages through only the matching jobs.
 - **Pending** — waiting for a worker
 - **Running** — actively being processed
 - **Success** — successfully uploaded to S3

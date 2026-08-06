@@ -138,19 +138,11 @@ The chart deploys the [BgUtils yt-dlp POT provider](https://github.com/Brainicis
 
 ## Cookies (YouTube auth)
 
-Cookies uploaded through the UI (`POST /cookies` on the API) are stored in a shared volume mounted writable in the API pod and read-only in the worker pod. The worker reads the file via `YTDLP_COOKIEFILE` for age-restricted download auth.
+Cookies uploaded through the UI (`POST /cookies` on the API) are stored in **Valkey** (database 3) — the API writes them on upload and the worker reads them on each download job, writing a local writable copy for yt-dlp. No configuration or shared volume is required; the API and worker pods reach the same Valkey instance.
 
 | Parameter | Default | Description |
 |---|---|---|
-| `cookies.dir` | `/var/zimmporter/cookies` | API-side mount path (writable, holds `cookies.txt`) |
-| `cookies.workerMountPath` | `/etc/zimmporter/cookies` | Worker-side mount path (read-only) |
-| `cookies.filename` | `cookies.txt` | Cookie file name inside the shared volume |
-| `cookies.persistence.enabled` | `true` | Create a PVC for the shared cookies volume |
-| `cookies.persistence.storageClass` | `""` | PVC storage class (default cluster `StorageClass` when empty) |
-| `cookies.persistence.accessModes` | `["ReadWriteMany"]` | PVC access modes — must support shared mounts |
-| `cookies.persistence.size` | `1Gi` | PVC size |
-
-The cookies volume requires a `StorageClass` with `ReadWriteMany` access (or a provider supporting shared volumes), since both the API and worker pods mount it.
+| *(none)* | — | No cookie-specific values; content lives in Valkey under `zimmporter:cookies:content` / `zimmporter:cookies:meta` |
 
 ## Extra Volumes / Volume Mounts
 

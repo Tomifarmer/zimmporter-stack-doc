@@ -25,7 +25,7 @@ cd zimmporter-api
 docker compose up -d
 ```
 
-This starts the API, Celery worker, MariaDB, Valkey, the BgUtils POT provider, and connects to an external S3-compatible store. The API and worker share a volume for the uploaded YouTube cookies file.
+This starts the API, Celery worker, MariaDB, Valkey, the BgUtils POT provider, and connects to an external S3-compatible store. The uploaded YouTube cookies file is stored in Valkey (no shared volume between the API and worker).
 
 Install and run the frontend:
 

@@ -54,7 +54,7 @@ Key tables:
 | db 0 | Celery broker |
 | db 1 | Celery result backend |
 | db 2 | Search result cache (5 min TTL) + available-albums index reads |
-| db 3 | Thumbnail image cache (24 h TTL) + cookie staleness flag |
+| db 3 | Thumbnail image cache (24 h TTL) + cookie store (content + staleness flag) |
 | db 4 | Library index dispatch lock |
 
 ## Library Index
@@ -87,11 +87,11 @@ Common causes:
 
 ## Cookies (YouTube auth)
 
-Age-restricted downloads can be authenticated with a shared yt-dlp cookies file:
+Age-restricted downloads can be authenticated with an uploaded yt-dlp cookies file stored in **Valkey**:
 
-1. **Upload** — `POST /cookies` accepts a Netscape-format `cookies.txt` (multipart), validates it, and writes it atomically into a shared volume (`COOKIE_DIR`). `GET /cookies` exposes metadata only — never contents.
+1. **Upload** — `POST /cookies` accepts a Netscape-format `cookies.txt` (multipart), validates it, and stores it in Valkey (`zimmporter/cookie_store.py`, db 3). `GET /cookies` exposes metadata only — never contents. No shared file volume is required.
 2. **Stale detection** — when yt-dlp reports "Sign in to confirm you're not a bot", invalid cookies, or cookie rotation during a download, the worker flags the cookies as stale (`zimmporter/cookie_health.py`, Valkey db 3). Downloads then run anonymously until a fresh upload clears the flag.
-3. **Workers** — each job re-applies the cookie config from `YTDLP_COOKIEFILE` without a restart.
+3. **Workers** — each job re-reads the cookies from Valkey and writes a local writable copy for yt-dlp, without a restart or shared mount.
 
 ## POT Provider (BgUtils)
 

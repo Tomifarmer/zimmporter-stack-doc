@@ -31,8 +31,6 @@
 | `NAVIDROME_URL` | No | — | Base URL of the Navidrome server (worker-side; required when `INDEX_SOURCE` is `navidrome` or `both`) |
 | `NAVIDROME_USER` | No | — | Subsonic API username for Navidrome (worker-side) |
 | `NAVIDROME_PASS` | No | — | Subsonic API password for Navidrome (worker-side) |
-| `COOKIE_DIR` | No | `/var/zimmporter/cookies` | Directory holding the shared yt-dlp cookies file (uploaded via `POST /cookies`) |
-| `YTDLP_COOKIEFILE` | No | — | Worker-side path to the cookies file used by yt-dlp for age-restricted downloads |
 | `POT_PROVIDER_URL` | No | — | HTTP URL of a BgUtils yt-dlp POT provider (e.g. `http://bgutil-provider:4416`); unset disables PO-token extraction |
 | `CORS_ALLOWED_ORIGINS` | No | `*` | Comma-separated allowed CORS origins |
 | `CA_CERT` | No | — | Path to custom CA certificate bundle |
@@ -57,7 +55,7 @@ The repository includes a `docker-compose.yml` that starts:
 - Valkey (Redis-compatible, used as Celery broker and result backend)
 - `bgutil-provider` (BgUtils yt-dlp POT provider, exposed to the worker via `POT_PROVIDER_URL`)
 
-S3-compatible storage (e.g., MinIO) is expected to be available externally. The API and worker share a `cookies_data` volume that holds the uploaded yt-dlp cookies file.
+S3-compatible storage (e.g., MinIO) is expected to be available externally. The uploaded yt-dlp cookies file is stored in **Valkey** (database 3), which the API writes and workers read — no shared volume is required. The cookies file has no environment configuration.
 
 ## Running Tests
 

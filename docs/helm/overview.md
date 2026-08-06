@@ -9,7 +9,7 @@ The Zimmporter Helm chart deploys the full stack to Kubernetes.
 - **Services:** ClusterIP for each component (4–6 depending on external dependencies and the POT provider)
 - **Ingress:** API and Frontend (optional, separately configurable)
 - **ConfigMaps:** API config, Worker config, Frontend config (non-sensitive env vars)
-- **PersistentVolumeClaims:** Cookies (shared RWX volume for yt-dlp cookies), plus MariaDB and Valkey
+- **PersistentVolumeClaims:** MariaDB and Valkey only (yt-dlp cookies are stored in Valkey, not on a volume)
 - **Secrets:** Database credentials (optional), S3 credentials, Navidrome credentials (optional), API and frontend auth, OIDC credentials (optional), GitHub OAuth credentials (optional)
 
 The API pod also runs the periodic library index dispatcher (`INDEX_INTERVAL_MINUTES`, default 30; `INDEX_SOURCE` selects `s3`, `navidrome`, or `both`).
@@ -20,8 +20,7 @@ The API, worker, and frontend deployments carry a `checksum/config` annotation, 
 
 - Kubernetes 1.25+
 - Helm 3.8+
-- Default StorageClass (or set one explicitly for Valkey / MariaDB / cookies)
-- A StorageClass with `ReadWriteMany` access (or a provider that supports shared volumes) for the cookies volume — both the API and worker pods mount it
+- Default StorageClass (or set one explicitly for Valkey / MariaDB)
 - S3-compatible storage accessible from the cluster
 
 ## Quick Install

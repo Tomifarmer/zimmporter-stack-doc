@@ -53,7 +53,7 @@ Returns metadata about the configured yt-dlp cookies file — never its contents
 POST /cookies
 ```
 
-Multipart upload (field `file`) of a Netscape-format `cookies.txt`. Validates that the file parses and contains at least one `youtube.com` cookie, and is at most 2 MB. The file is written atomically into the shared cookies volume (`COOKIE_DIR`), so workers pick it up without restart.
+Multipart upload (field `file`) of a Netscape-format `cookies.txt`. Validates that the file parses and contains at least one `youtube.com` cookie, and is at most 2 MB. The content is stored in **Valkey** (via the cookie store), so running workers pick it up on their next download job without restart.
 
 While stale, downloads run anonymously (bad cookies are skipped) and `GET /cookies` reports `is_stale: true`. Uploading a fresh file clears the flag.
 
@@ -140,6 +140,7 @@ GET /jobs?limit={n}&offset={n}
 |---|---|---|---|
 | `limit` | int | `50` | Maximum jobs to return |
 | `offset` | int | `0` | Number of jobs to skip |
+| `status` | string | `all` | Filter by job status before paginating: `all`, `pending`, `running`, `success`, `failed`, or `partial`. `success` excludes partial successes (jobs with failed songs); those are returned by `partial`. |
 
 When authenticated via Bearer token (OIDC/GitHub), only the requesting user's jobs are returned. Unauthenticated or API-key requests see all jobs.
 
