@@ -23,6 +23,7 @@
 | `api.env.OIDC_ISSUER_URL` | `""` | OIDC issuer URL for token validation |
 | `api.env.GITHUB_CLIENT_ID` | `""` | GitHub OAuth App client ID for token validation |
 | `api.env.API_PROXY_FETCH` | `"false"` | Proxy thumbnail fetches through the API; thumbnails embedded as base64 data URIs in search results |
+| `api.env.JOB_ADMIN_GROUPS` | `""` | Comma-separated groups that bypass the per-group job filter and see/retry all jobs (empty = no admin groups; group-scoped visibility by default) |
 | `api.indexSource` | `"s3"` | Which library sources feed the available-albums index (`INDEX_SOURCE`): `s3` (default), `navidrome`, or `both` |
 | `api.indexIntervalMinutes` | `30` | How often (minutes) the API pod dispatches the periodic library index scan |
 | `api.extraEnv` | `[]` | Additional env vars for the API pod (see [extraEnv](#extra-environment-variables)) |

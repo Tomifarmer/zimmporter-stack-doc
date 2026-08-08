@@ -128,7 +128,7 @@ Request body:
 GET /jobs/{job_id}
 ```
 
-Returns job metadata, current progress (album, song counts), and per-song status.
+Returns job metadata, current progress (album, song counts), and per-song status. Jobs not visible to the requester (see the `GET /jobs` visibility rules) return `404`.
 
 ### List Jobs
 
@@ -142,7 +142,7 @@ GET /jobs?limit={n}&offset={n}
 | `offset` | int | `0` | Number of jobs to skip |
 | `status` | string | `all` | Filter by job status before paginating: `all`, `pending`, `running`, `success`, `failed`, or `partial`. `success` excludes partial successes (jobs with failed songs); those are returned by `partial`. |
 
-When authenticated via Bearer token (OIDC/GitHub), only the requesting user's jobs are returned. Unauthenticated or API-key requests see all jobs.
+When authenticated via Bearer token (OIDC), jobs are scoped to the requester: their own jobs, jobs requested by members of any of their groups (from the token's `groups` claim), and jobs with no recorded requester. Users in a group listed in `JOB_ADMIN_GROUPS` see all jobs. GitHub-authenticated and API-key requests see jobs they requested plus unowned jobs; unauthenticated requests see all jobs.
 
 ### Retry Failed Songs
 
@@ -156,5 +156,5 @@ Resets all failed songs in a job to `pending` and re-dispatches the original Cel
 |---|---|
 | `200` | Job retry dispatched |
 | `400` | No failed songs to retry |
-| `403` | Job belongs to a different OIDC user |
+| `403` | Job is not visible to the requesting user (different group, no admin rights) |
 | `404` | Job not found |

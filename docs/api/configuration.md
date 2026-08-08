@@ -25,6 +25,7 @@
 | `GITHUB_CLIENT_ID` | No | — | GitHub OAuth App client ID |
 | `JOB_RETENTION_DAYS` | No | `0` | Number of days to keep job history (`0` = never purge) |
 | `JOB_STALLED_TIMEOUT` | No | `5` | Minutes after which a stuck `pending`/`running` job is auto-failed (worker crash guard) |
+| `JOB_ADMIN_GROUPS` | No | `""` | Comma-separated groups that bypass the per-group job filter and see/retry all jobs (empty = no admin groups; defaults to group-scoped visibility) |
 | `API_PROXY_FETCH` | No | `""` | Set to `"true"` to proxy thumbnail fetches through the API; thumbnails are embedded as base64 data URIs in search results (required when the frontend has no internet access) |
 | `INDEX_INTERVAL_MINUTES` | No | `30` | How often (minutes) the API pod dispatches the periodic library index scan (min `1`) |
 | `INDEX_SOURCE` | No | `s3` | Which library sources feed the `available_albums` index: `s3` (S3 prefix scan), `navidrome`, or `both` |
@@ -32,6 +33,8 @@
 | `NAVIDROME_USER` | No | — | Subsonic API username for Navidrome (worker-side) |
 | `NAVIDROME_PASS` | No | — | Subsonic API password for Navidrome (worker-side) |
 | `POT_PROVIDER_URL` | No | — | HTTP URL of a BgUtils yt-dlp POT provider (e.g. `http://bgutil-provider:4416`); unset disables PO-token extraction |
+| `ENABLE_LYRICS` | No | `true` | Set to `"false"` to disable best-effort lyrics lookup/embedding (LRCLIB) during downloads |
+| `LRCLIB_BASE_URL` | No | `https://lrclib.net/api` | LRCLIB endpoint override |
 | `CORS_ALLOWED_ORIGINS` | No | `*` | Comma-separated allowed CORS origins |
 | `CA_CERT` | No | — | Path to custom CA certificate bundle |
 
