@@ -35,6 +35,8 @@
 | `POT_PROVIDER_URL` | No | — | HTTP URL of a BgUtils yt-dlp POT provider (e.g. `http://bgutil-provider:4416`); unset disables PO-token extraction |
 | `ENABLE_LYRICS` | No | `true` | Set to `"false"` to disable best-effort lyrics lookup/embedding (LRCLIB) during downloads |
 | `LRCLIB_BASE_URL` | No | `https://lrclib.net/api` | LRCLIB endpoint override |
+| `ENABLE_GENRE` | No | `true` | Set to `"false"` to disable best-effort album genre lookup/embedding (iTunes Search API) during downloads |
+| `ITUNES_LOOKUP_LIMIT` | No | `3` | Number of candidate albums to inspect per iTunes genre lookup |
 | `CORS_ALLOWED_ORIGINS` | No | `*` | Comma-separated allowed CORS origins |
 | `CA_CERT` | No | — | Path to custom CA certificate bundle |
 

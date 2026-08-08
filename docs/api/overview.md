@@ -16,6 +16,8 @@ The Zimmporter API is a Python backend built with **FastAPI** that orchestrates 
 - Download tracks with yt-dlp
 - Convert audio to AAC via ffmpeg
 - Embed metadata (title, artist, album, cover art) with mutagen
+- Download and embed song lyrics from LRCLIB during import (best-effort, `ENABLE_LYRICS`)
+- Look up and embed the real album genre from the iTunes Search API during import (best-effort, `ENABLE_GENRE`)
 - Upload finished files to S3-compatible storage
 - Track job status via Celery result backend
 - Auth middleware (API key, OIDC Bearer token, or GitHub Bearer token)
@@ -41,6 +43,8 @@ zimmporter-api/
 │   └── index.py         # Library index tasks (index_albums, index_navidrome)
 ├── zimmporter/          # Core library
 │   ├── core.py          # YouTube search and download orchestration
+│   ├── lyrics.py        # LRCLIB lyrics lookup (ENABLE_LYRICS)
+│   ├── genre.py         # iTunes album genre lookup (ENABLE_GENRE)
 │   ├── cookie_health.py # Cookie staleness flag helpers
 │   ├── postprocessors.py# FFmpeg conversion, metadata embedding, S3 upload
 │   ├── navidrome.py     # Navidrome Subsonic API client (library index source)

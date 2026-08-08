@@ -150,7 +150,7 @@ When authenticated via Bearer token (OIDC), jobs are scoped to the requester: th
 POST /jobs/{job_id}/retry
 ```
 
-Resets all failed songs in a job to `pending` and re-dispatches the original Celery task.
+Resets all failed songs in a job to `pending`, clears the job's own `error` field, and re-dispatches the original Celery task. A job's `error` is also cleared whenever it starts again (`status=running`) and on successful completion, so retried/re-run jobs never show a stale failure message.
 
 | Status | Condition |
 |---|---|

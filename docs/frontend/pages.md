@@ -46,4 +46,5 @@ Detailed view of a single job with:
 - Real-time polling (every 3 seconds) while job is pending/running
 - Progress summary (current album, album progress, song counts)
 - Per-song status table with download status for each track
+- The job's error box is shown only when the job has failed — retried or later-succeeded jobs never display a stale error
 - Retry button for failed songs within the job

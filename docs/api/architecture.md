@@ -108,6 +108,22 @@ When `API_PROXY_FETCH=true` is set, the API proxies thumbnail images from YouTub
 
 A standalone `GET /thumbnail?url=` endpoint is also available for external integrations — it returns raw image bytes and is excluded from auth middleware.
 
+## Lyrics (LRCLIB)
+
+When `ENABLE_LYRICS=true` (default), the worker fetches lyrics for each **album** song during download and embeds them into the audio file's standard lyrics tag (`USLT` for ID3/mp3, `©lyr` for MP4/m4a) so players such as Navidrome can display them:
+
+1. **Lookup** — `zimmporter/lyrics.py` queries the [LRCLIB API](https://lrclib.net) (`GET /api/get` with an `/api/search` fallback) by artist and track title and strips LRC timestamps. Only **plain** lyrics are embedded, because the downloaded audio is a YouTube clip (not the studio master) whose timing cannot be matched by synced timestamps.
+2. **Embed** — `EnrichMeta` writes the lyrics into the file tags alongside existing metadata.
+3. **Best-effort** — misses, network errors, and disabled lookups return `None` and never fail or block the download. Playlist downloads skip lyrics (artist is unknown there). The endpoint base is overridable via `LRCLIB_BASE_URL`.
+
+## Genre (iTunes)
+
+When `ENABLE_GENRE=true` (default), the worker looks up the *album's* real genre during download. YouTube Music never exposes a genre — yt-dlp only writes the watch-page category `Music` — so it is resolved from the [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/) and embedded into the standard ID3/MP4 genre tag (`TCON`/`©gen`):
+
+1. **Lookup** — `zimmporter/genre.py` queries the iTunes Search API (`term = "<artist> <album>"`, `media=music`, `entity=album`) and returns the `primaryGenreName` of a candidate whose `artistName` and `collectionName` match both fields (case- and whitespace-insensitively). `ITUNES_LOOKUP_LIMIT` (default `3`) caps the number of candidates per lookup; the 5 s timeout means a slow lookup never blocks imports.
+2. **Embed** — `EnrichMeta` writes the genre into the file tags alongside existing metadata; songs with no resolved genre have any stale genre tag cleared instead of keeping it.
+3. **Best-effort** — misses, mismatches, timeouts, network errors, and disabled lookups return `None` and never fail or block the download. The worker logs each lookup (`Genre lookup: <artist> - <album> -> <genre>`), so a missing genre is diagnosable from worker logs.
+
 ## S3 Path Convention
 
 Uploaded files follow this path pattern:
