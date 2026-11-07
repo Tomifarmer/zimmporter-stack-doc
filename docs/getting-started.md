@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Python 3.14+
+- Python 3.15+
 - Node.js 20+
 - Docker and Docker Compose (for local dev)
 - MariaDB (or use the provided Docker setup)
